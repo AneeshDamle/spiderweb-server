@@ -1,28 +1,31 @@
-import datetime
-import cgi
-import socket
+#import LIBRARY REFERENCES
+import datetime #https://www.dataquest.io/blog/python-datetime-tutorial/
+import socket   #https://docs.python.org/3/howto/sockets.html
 from http import HTTPStatus
 import http.client
-import os
-import socket
-
-tasklist = ['Task 1', 'Task 2', 'Task 3']
+import os       #https://www.geeksforgeeks.org/os-module-python-examples/
 
 HOST = 'localhost'
 PORT_NO = 8888
 
 
-def print_type(string):
-    print(string, type(string))
+# print_type: prints values of variable along with type
+# NOTE: Checking purpose
+def print_type(var):
+    print(var, type(var))
 
+# TCPServer: Class for TCP server
+# reference: https://bhch.github.io/posts/2017/11/writing-an-http-server-from-scratch/
 class TCPServer:
 
+    # initialise host and port number
     def __init__(self, host=HOST, port=PORT_NO):
         self.host = host
         self.port = port
 
+    # get input action (HTTP request)
     def start(self):
-        # connect server side w=via TCP socket
+        # connect server side via TCP socket
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s.bind((self.host, self.port))
@@ -42,23 +45,29 @@ class TCPServer:
             # close the connection (demonstrates non-persistent connection)
             conn.close()
 
+    # handle client-side requests 
     def handle_request(self, data):
         # will be overrided in subclass
         return data
 
 
+# get_datetime: convert current date and time to HTTP request format
+# FORMAT:   DAY, DD MMM YYYY HH:MM:SS IST
+# Example:  Mon, 05 Dec 2022 19:00:37 IST
 def get_datetime():
     today = datetime.datetime.today()
     datestr = today.strftime("%a, %d %b %Y %X IST")
     return datestr
 
+# HTTPServer
 class HTTPServer(TCPServer):
     headers = {
-        'Server': 'spideyserver',
+        'Server': 'AneeshChaServer',
         'Date': get_datetime(),
         'Content-Type': 'text/html',
     }
 
+    # handle_request: handles client GET, PUT, POST, DELETE, HEAD requests
     def handle_request(self, request_data):
         # create an instance of `HTTPRequest`
         request = HTTPRequest(request_data)
@@ -73,7 +82,7 @@ class HTTPServer(TCPServer):
                 response = self.handle_POST(request)
         except AttributeError:
             response = self.HTTP_501_handler(request)
-        
+ 
         return response
 
     '''
@@ -85,7 +94,7 @@ class HTTPServer(TCPServer):
                                # Blank line
     Hello, world!              # Response body
     '''
-    # Returns response line with appropriate Status Code
+    # response_line: Returns response line with appropriate Status Code
     def response_line(self, status_code):
         reason = http.client.responses[status_code]
         line = "HTTP/1.1 %s%s\r\n" % (status_code, reason)
@@ -103,7 +112,7 @@ class HTTPServer(TCPServer):
             headers += "%s: %s\r\n" % (h, headers_copy[h])
         return headers.encode()
 
-
+    # Handles server-side issues with 50X requests
     def HTTP_501_handler(self, request):
         response_line = self.response_line(status_code=501)
         response_headers = self.response_headers()
@@ -111,7 +120,8 @@ class HTTPServer(TCPServer):
         response_body = b"<h1>501 Not Implemented</h1>"
         return b"".join([response_line, response_headers, blank_line, response_body])
 
-
+    # handle_GET: handles replies to client-side GET requests
+    # Parse the GET request, extract information and build reply
     def handle_GET(self, request):
         filename = request.uri.strip('/') # remove the slash from the request URI
         # if a file is requested, check if it exists
@@ -136,7 +146,8 @@ class HTTPServer(TCPServer):
 
         return b"".join([response_line, response_headers, blank_line, response_body])
 
-
+    # handle_POST: handles client-side POST requests
+    # Application-oriented: Store TODO lists
     def handle_POST(self, request):
         flag = 0
         for line in request.header:
@@ -202,9 +213,9 @@ GET /index.html HTTP/1.1
 Host: example.com
 Connection: keep-alive
 User-Agent: Mozilla/5.0
+'''
 
-or
-
+'''
 POST /test HTTP/1.1
 Host: foo.example
 Content-Type: application/x-www-form-urlencoded
