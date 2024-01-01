@@ -6,8 +6,7 @@ This project aims to understand how the actual web-server works; by implementing
 ### Working
 The project provides TODO lists application.
 ```
-$ cd src
-$ python3 server.py
+cd src; python3 server.py
 ```
 **NOTE**: Currently, the server can implement GET, PUT, POST, HEAD, DELETE methods ]
 
