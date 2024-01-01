@@ -5,10 +5,11 @@ This project aims to understand how the actual web-server works; by implementing
 
 ### Working
 The project provides TODO lists application.
-
-> Usage: python3 server.py
->
-> [ Currently, the server can implement GET, PUT, POST, HEAD, DELETE methods ]
+```
+$ cd src
+$ python3 server.py
+```
+**NOTE**: Currently, the server can implement GET, PUT, POST, HEAD, DELETE methods ]
 
 ### Future Tasks
 > 1. Client cache
